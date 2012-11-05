@@ -1,5 +1,6 @@
 ##A simple PHP ORM
 
-###Currently supports mysql
+Currently supports the following DB
+* mysql
 
 #####Created by Ethan Hayon
