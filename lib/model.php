@@ -19,7 +19,8 @@
  * TODO: __get for an association entity
  * TODO: has_many, belongs_to has_many_through
  */
-require_once 'database_interface.php';
+
+require_once(realpath(dirname(__FILE__)).'/db/database_interface.php');
 
 abstract class Model {
 

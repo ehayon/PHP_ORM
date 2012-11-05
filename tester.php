@@ -5,8 +5,8 @@
  * Time: 12:11 AM
  */
 
-include("./mysql.php");
-include("./model.php");
+include("./lib/db/mysql.php");
+include("./lib/model.php");
 
 $db = new Database();
 $db->setup("localhost", "root", "", "ParkingManagementSystem");

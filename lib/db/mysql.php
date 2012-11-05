@@ -9,7 +9,7 @@
  *********************************
  */
 
-include("database_interface.php");
+require_once(realpath(dirname(__FILE__))."/database_interface.php");
 
 class Database implements DatabaseInterface {
 
