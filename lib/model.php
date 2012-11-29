@@ -202,6 +202,7 @@ abstract class Model {
 		} else {
 			static::getDB()->update(static::getName(), $this->data);
 		}
+		return true;
 	}
 
 	/**
