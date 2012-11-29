@@ -31,6 +31,8 @@ abstract class Model {
 	public $is_new;
 	private static $method_table = array();
 	private static $associations = array();
+	public $validation_errors = array();
+
 	/**
 	 * Intercept any method calls and hand over to the method_handler with php magic __call method
 	 * @param $method Method to call
@@ -180,10 +182,16 @@ abstract class Model {
 	 */
 	public function save() {
 		if(isset(static::$validates_required)) {
+			$this->validation_errors = array();
 			// check to make sure every required variable is set
 			foreach(static::$validates_required as $var) {
 				if(!isset($this->data[$var])) {
 					// required parameter is missing
+					$err = array(
+						'attr' => $var,
+						'error' => ' is required'
+					);
+					array_push($this->validation_errors, $err);		
 					return false;
 				}
 			}
