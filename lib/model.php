@@ -192,9 +192,9 @@ abstract class Model {
 						'error' => ' is required'
 					);
 					array_push($this->validation_errors, $err);		
-					return false;
 				}
 			}
+			if(count($this->validation_errors) > 0) return false;
 		}
 		if($this->is_new) {
 			static::getDB()->insert(static::getName(), $this->data);
