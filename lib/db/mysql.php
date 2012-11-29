@@ -73,6 +73,19 @@ class Database implements DatabaseInterface {
         }
     }
 
+	public function query($sql) {
+        if($this->connected) {
+            $res = mysql_query($sql, $this->link) or die (mysql_error());
+            $data = array();
+            while($row = mysql_fetch_assoc($res)) {
+                $row['id'] = $row[$this->get_primary_key($tbl)];
+                array_push($data, $row);
+            }
+            return $data;
+        }
+
+	}
+
     public function findOne($tbl, $conditions, $order) {
         $res = $this->find($tbl, $conditions, $order, 1);
         return (count($res) >= 1) ? $res[0] : null;
@@ -101,6 +114,15 @@ class Database implements DatabaseInterface {
     }
 
     public function delete($tbl, $conditions) {
+		if($this->connected) {
+			$sql = "DELETE FROM $tbl";
+			if(count($conditions) > 0) {
+				$sql .= " WHERE ";
+				$sql .= join(" AND ", $this->build_sql($conditions));
+			}
+
+			$res = mysql_query($sql, $this->link) or die (mysql_error());
+		}
 
     }
 

@@ -237,7 +237,18 @@ abstract class Model {
      * @param $tbl DataStore table name for join table
      */
     public static function has_many_through($entity, $tbl) {
+		$associations =& self::$associations;
+		$class = get_called_class();
+		if(!array_key_exists($class, $associations))
+			$associations[$class] = array();
 
+		$associations[$class][strtolower(get_class($entity))."s"] = array(
+			'type' 			=> 'has_many_through',
+			'key' 			=> 'id_'.strtolower(get_class($entity)),
+			'class_name' 	=> get_class($entity),
+			'through' 		=> $tbl
+
+		);
     }
 
     public static function save_association($instance, $attr, $val, $association_info) {
@@ -250,6 +261,26 @@ abstract class Model {
             case 'has_many':
                 print "<br />SAVING THE HAS_MANY RELATIONSHIP<br />";
                 break;
+			case 'has_many_through':
+				// remove all elements from the through table with $instance->id
+				$pk = static::getDB()->get_primary_key(static::$table_name);
+				static::getDB()->delete(
+					$association_info['through'],
+					array($pk => $instance->$pk));
+				// re-add all the new items
+				foreach($val as $obj) {
+					if(isset($obj)) {
+						$d = array(
+								$pk => $instance->$pk,
+								$association_info['key'] => $obj->id);
+
+						static::getDB()->insert(
+							$association_info['through'],
+							&$d
+						);
+					}
+				}
+				break;
         }
     }
 
@@ -257,13 +288,30 @@ abstract class Model {
         // TODO Implement getter functions for has_many and belongs_to
         switch($association_info['type']) {
             case 'has_one':
-                $entity = Comment::findOne(array(
+                $entity = $association_info['class_name']::findOne(array(
                     $association_info['key'] => $instance->__get($association_info['key'])
                 ), null);
                 return $entity;
                 break;
             case 'has_many':
                 break;
+			case 'has_many_through':
+				$pk = static::getDB()->get_primary_key(static::$table_name);
+
+				// select all comments with id_comment where 
+				$res = static::getDB()->find(
+					$association_info['through'],
+					array($pk => $instance->$pk));
+
+				$objs = array();
+				foreach($res as $r) {
+					$item = $association_info['class_name']::findOne(array(
+						$association_info['key'] => $r[$association_info['key']]
+					), null);
+					array_push($objs, $item);
+				}
+				return $objs;
+				break;
 
         }
     }
