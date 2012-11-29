@@ -21,6 +21,7 @@
  */
 
 require_once(realpath(dirname(__FILE__)).'/db/database_interface.php');
+require_once(realpath(dirname(__FILE__)).'/db/mysql.php');
 
 abstract class Model {
 
