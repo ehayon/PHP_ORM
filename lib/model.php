@@ -179,6 +179,15 @@ abstract class Model {
      * Save the object to a non-volatile DataStore
      */
     public function save() {
+		if(isset(static::$validates_required)) {
+			// check to make sure every required variable is set
+			foreach(static::$validates_required as $var) {
+				if(!isset($this->data[$var])) {
+					// required parameter is missing
+					return false;
+				}
+			}
+		}
         if($this->is_new) {
             static::getDB()->insert(static::getName(), $this->data);
             $this->is_new = false;
