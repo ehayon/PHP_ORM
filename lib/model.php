@@ -27,7 +27,7 @@ abstract class Model {
 
 	protected static $_db = null;
 	protected static $table_name;
-	private $data;
+	public $data;
 	public $is_new;
 	private static $method_table = array();
 	private static $associations = array();
