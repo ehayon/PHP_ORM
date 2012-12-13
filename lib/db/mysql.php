@@ -37,6 +37,7 @@ class Database implements DatabaseInterface {
     public function build_sql($conditions) {
         $res = array();
         foreach($conditions as $ck => $cv) {
+						$cv = mysql_real_escape_string($cv);
             $res[] = "`$ck` = '$cv'";
         }
         return $res;
@@ -75,6 +76,7 @@ class Database implements DatabaseInterface {
 
 	public function query($sql) {
         if($this->connected) {
+						$sql = mysql_real_escape_string($sql);
             $res = mysql_query($sql, $this->link) or die (mysql_error());
             $data = array();
             while($row = mysql_fetch_assoc($res)) {
@@ -101,12 +103,13 @@ class Database implements DatabaseInterface {
         $fields = array();
         $elements = array();
         foreach($data as $k => $v) {
-            $fields[] = $k;
-            $elements[] = $v;
+            $fields[] = addslashes($k);
+            $elements[] = addslashes($v);
         }
         $sql = "INSERT INTO $tbl ";
         $sql .= "(".join(",", $fields).") ";
         $sql .= "VALUES('".join("','", $elements)."')";
+
         $res = mysql_query($sql, $this->link);
         // update the data with the id of the newly inserted item
         $pkd = mysql_insert_id($this->link);
@@ -120,7 +123,7 @@ class Database implements DatabaseInterface {
 				$sql .= " WHERE ";
 				$sql .= join(" AND ", $this->build_sql($conditions));
 			}
-
+			
 			$res = mysql_query($sql, $this->link) or die (mysql_error());
 		}
 

@@ -177,6 +177,11 @@ abstract class Model {
 		return (count($res) >= 1) ? $res[0] : null;
 	}
 
+	public function delete() {
+		$pk = static::getDB()->get_primary_key(static::$table_name);
+		static::getDB()->delete(static::getName(), array($pk => $this->$pk));
+	}
+
 	/**
 	 * Save the object to a non-volatile DataStore
 	 */
